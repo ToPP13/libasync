@@ -35,11 +35,11 @@ file (GLOB MAIN_INCLUDES
 #source_group("include" FILES ${MAIN_INCLUDES})
 
 
-# Add a library to the project using the specified source files.
+
 add_executable(libasync_cli src/libasync.cpp src/interpreter.cpp src/dynamicinterpreter.cpp src/staticinterpreter.cpp src/commandstorage.cpp src/lib.cpp)
 add_library(libasync src/lib.cpp )
 # Add an executable to the project using the specified source files.
-add_executable(gtest test/gtest.cpp src/interpreter.cpp src/dynamicinterpreter.cpp src/staticinterpreter.cpp src/commandstorage.cpp src/lib.cpp)
+add_executable(gtest test/gtest.cpp test/gtest.cpp src/interpreter.cpp src/dynamicinterpreter.cpp src/staticinterpreter.cpp src/commandstorage.cpp src/lib.cpp)
 
 
 # Set propertiess to a target.
