@@ -1,5 +1,5 @@
 #include "../include/lib.h"
-#include "../include/logger.h"
+#include "../include/libdata.h"
 #include "version.h"
 
 int version()
@@ -7,18 +7,15 @@ int version()
     return PROJECT_VERSION_PATCH;
 }
 
-Logger logger{};
-
-std::map<uint, Interpreter> LibData::global_interpreter_pool = {};
 
 uint connect(uint batch_size)
 {
 
-    if (!logger.is_log_on())
-        logger.turn_log_on();
+    if (!LibData::logger.is_log_on())
+        LibData::logger.turn_log_on();
 
-    if (!logger.is_print_on())
-        logger.turn_print_on();
+    if (!LibData::logger.is_print_on())
+        LibData::logger.turn_print_on();
 
 
     static uint context = 0;
@@ -39,7 +36,7 @@ void recieve(const char * buffer, uint buffer_size, uint context)
 
     std::string res = LibData::global_interpreter_pool[context].process(command);
     if (!res.empty())
-        logger.log(res);
+        LibData::logger.log(res);
 }
 
 void disconnect(uint context)
@@ -49,7 +46,7 @@ void disconnect(uint context)
     {
         std::string res = int_it->second.stop_processing();
         if (!res.empty())
-            logger.log(res);
+            LibData::logger.log(res);
 
         LibData::global_interpreter_pool.erase(context);
     }

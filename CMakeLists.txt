@@ -42,7 +42,8 @@ add_library(libasync src/lib.cpp
         src/interpreter.cpp
         src/commandstorage.cpp
         src/lib.cpp
-        src/logger.cpp)
+        src/logger.cpp
+        src/libdata.cpp)
 add_executable(libasync_cli
         src/libasync.cpp)
 # Add an executable to the project using the specified source files.

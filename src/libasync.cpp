@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include "../include/lib.h"
+#include <vector>
+#include <thread>
 
 using std::cout;
 using std::endl;
