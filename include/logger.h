@@ -10,7 +10,11 @@
 #include <thread>
 #include <queue>
 #include <atomic>
+#include <sstream>
+#include <fstream>
 
+std::string string_from_int(long num);
+bool file_exists (const std::string& name);
 
 class LogEvent
 {
@@ -19,91 +23,39 @@ public:
     void print() {
         std::cout << message << std::endl;
     }
+    bool dump_file();
     std::string message;
 };
+
 
 
 
 class Logger
 {
 public:
-    Logger()
-    {
-        thread_num = 2;
-        for (uint i = 0;i<thread_num;i++)
-            log_queue.push_back({});
-        turn_print_on();
-        turn_log_on();
-    }
-    ~Logger()
-    {
-        turn_print_off();
-        turn_log_off();
-    }
+    Logger();
+    ~Logger();
 
-
-    void log(std::string log_data)
-    {
-        static uint log_count = 0;
-
-        LogEvent le(log_data);
-        {
-            std::lock_guard<std::mutex> lockGuard{mutex_log};
-            log_queue[thread_num%2].emplace(le);
-            log_count = (log_count+1)%2;
-        }
-
-        LogEvent pe(log_data);
-        {
-            std::lock_guard<std::mutex> lockGuard{mutex_print};
-            print_queue.emplace(pe);
-        }
-    }
-
-
+    void log(const std::string log_data);
 
     void _real_print();
     void _real_log(uint num);
 
-
     bool is_print_on(){return printOn;};
 
-    void turn_print_on()
-    {
-        printOn.store(true);
-        m_printThread = std::thread(&Logger::_real_print, this);
-    }
+    void turn_print_on();
 
     bool is_log_on(){return logOn;};
 
-    void turn_log_on()
-    {
-        logOn.store(true);
-        for (uint i=0;i<thread_num;i++)
-            m_log_threads.push_back(std::thread(&Logger::_real_log, this, i));
-    }
+    void turn_log_on();
 
-    void turn_print_off()
-    {
-        printOn.store(false);
-        if (m_printThread.joinable())
-            m_printThread.join();
-    }
+    void turn_print_off();
 
-
-    void turn_log_off()
-    {
-        logOn.store(false);
-        for (uint i=0;i<m_log_threads.size();i++)
-        {
-            if (m_log_threads[i].joinable())
-                m_log_threads[i].join();
-        }
-        for (uint i=0;i<m_log_threads.size();i++)
-            m_log_threads.pop_back();
-    }
+    void turn_log_off();
 
 private:
+
+
     std::thread m_printThread;
     std::vector<std::thread> m_log_threads;
 

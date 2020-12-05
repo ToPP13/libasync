@@ -12,15 +12,20 @@ Interpreter::Interpreter(uint batch_size):_batch_size(batch_size), _bracket_coun
 
 
 std::string Interpreter::process(const std::string & current_cmd) {
+    std::string res = "";
     if (current_cmd == open_bracket) {
-        _bracket_counter += 1;
+
         if (_bracket_counter == 0)
         {
             change_mode(Mode::Dynamic);
             if (!_scb.empty())
-                return _scb.get_bulk();
+            {
+                res= _scb.get_bulk();
+                _scb.clear();
+            }
         }
-        return "";
+        _bracket_counter += 1;
+        return res;
     }
     else if (current_cmd == close_bracket)
     {
@@ -31,17 +36,22 @@ std::string Interpreter::process(const std::string & current_cmd) {
             if (_bracket_counter == 0)
             {
                 change_mode(Mode::Static);
-                return _scb.get_bulk();
+                res= _scb.get_bulk();
+                _scb.clear();
             }
         }
-        return "";
+        return res;
     }
     else
     {
         _scb.add_command(current_cmd);
         if (_mode == Mode::Static && (_scb.size() == _batch_size))
-            return _scb.get_bulk();
-        return "";
+        {
+            res = _scb.get_bulk();
+            _scb.clear();
+            return res;
+        }
+        return res;
     }
 }
 
