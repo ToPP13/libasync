@@ -6,16 +6,23 @@ using std::cout;
 using std::endl;
 
 
+
 void test(std::vector<std::string> & data_series)
 {
     //    const std::string eof = "EOF";
-//    uint batch_size = 3;
+    uint batch_size = 3;
     // connect
+    uint new_context = connect(batch_size);
     for (auto test_command : data_series)
     {
         cout << test_command << endl;
+        auto buffer = test_command.c_str();
+        uint buffer_size = test_command.size();
+        recieve(buffer, buffer_size, new_context);
+
         //recieve
     }
+    disconnect(new_context);
     // disconnect
 }
 
@@ -33,8 +40,11 @@ int main()
 //    std::string line;
 //    std::stringstream streamIn;
 
+    std::cout << "1!" << std::endl;
+
     // test1
     test(testSeries1);
+    std::cout << "2!" << std::endl;
     // test2
     test(testSeries2);
 

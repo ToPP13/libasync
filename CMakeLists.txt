@@ -36,10 +36,17 @@ file (GLOB MAIN_INCLUDES
 
 
 
-add_executable(libasync_cli src/libasync.cpp src/interpreter.cpp src/dynamicinterpreter.cpp src/staticinterpreter.cpp src/commandstorage.cpp src/lib.cpp)
-add_library(libasync src/lib.cpp )
+
+add_library(libasync src/lib.cpp
+        src/libasync.cpp
+        src/interpreter.cpp
+        src/commandstorage.cpp
+        src/lib.cpp
+        src/logger.cpp)
+add_executable(libasync_cli
+        src/libasync.cpp)
 # Add an executable to the project using the specified source files.
-add_executable(gtest test/gtest.cpp test/gtest.cpp src/interpreter.cpp src/dynamicinterpreter.cpp src/staticinterpreter.cpp src/commandstorage.cpp src/lib.cpp)
+add_executable(gtest test/gtest.cpp test/gtest.cpp src/interpreter.cpp src/commandstorage.cpp src/lib.cpp)
 
 
 # Set propertiess to a target.
@@ -60,7 +67,7 @@ set_target_properties(gtest PROPERTIES
     INCLUDE_DIRECTORIES ${GTEST_INCLUDE_DIRS}
 )
 
-target_link_libraries(libasync_cli PRIVATE libasync)
+target_link_libraries(libasync_cli PRIVATE libasync pthread)
 target_link_libraries(gtest ${GTEST_LIBRARIES} libasync ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 # Add compile options to a target.
