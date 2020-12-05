@@ -52,8 +52,6 @@ bool LogEvent::dump_file()
 Logger::Logger()
 {
     thread_num = 2;
-    for (uint i = 0;i<thread_num;i++)
-        log_queue.emplace_back(std::queue<LogEvent>{});
     turn_print_on();
     turn_log_on();
 }
@@ -67,11 +65,9 @@ Logger::~Logger()
 
 void Logger::log(const std::string log_data)
 {
-    static uint log_count = 0;
     {
         std::lock_guard<std::mutex> lockGuard{mutex_log};
-        log_queue[thread_num%2].emplace(LogEvent(log_data));
-        log_count = (log_count+1)%2;
+        log_queue.emplace(LogEvent(log_data));
     }
 
     {
@@ -93,7 +89,7 @@ void Logger::turn_log_on()
 {
     logOn.store(true);
     for (uint i=0;i<thread_num;i++)
-        m_log_threads.emplace_back(std::thread(&Logger::_real_log, this, i));
+        m_log_threads.emplace_back(std::thread(&Logger::_real_log, this));
 }
 
 void Logger::turn_print_off()
@@ -136,19 +132,19 @@ void Logger::_real_print()
     }
 }
 
-void Logger::_real_log(uint num)
+void Logger::_real_log()
 {
     while(logOn)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         {
             std::lock_guard<std::mutex> guard{mutex_log};
-            if (log_queue[num].empty())
+            if (log_queue.empty())
                 continue;
 
-            auto& print_event = log_queue[num].front();
+            auto& print_event = log_queue.front();
             print_event.dump_file();
-            log_queue[num].pop();
+            log_queue.pop();
         }
     }
 }

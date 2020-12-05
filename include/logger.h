@@ -38,8 +38,6 @@ public:
 
     void log(const std::string log_data);
 
-    void _real_print();
-    void _real_log(uint num);
 
     bool is_print_on(){return printOn;};
 
@@ -55,6 +53,8 @@ public:
 
 private:
 
+    void _real_print();
+    void _real_log();
 
     std::thread m_printThread;
     std::vector<std::thread> m_log_threads;
@@ -65,8 +65,8 @@ private:
     std::mutex mutex_print;
     std::mutex mutex_log;
 
-    std::queue<LogEvent> print_queue = {};
-    std::vector<std::queue<LogEvent>> log_queue;
+    std::queue<LogEvent> print_queue;
+    std::queue<LogEvent> log_queue;
 
     uint thread_num;
 };
