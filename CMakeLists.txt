@@ -38,7 +38,6 @@ file (GLOB MAIN_INCLUDES
 
 
 add_library(libasync src/lib.cpp
-        src/libasync.cpp
         src/interpreter.cpp
         src/commandstorage.cpp
         src/lib.cpp
@@ -69,7 +68,7 @@ set_target_properties(gtest PROPERTIES
 )
 
 target_link_libraries(libasync_cli PRIVATE libasync pthread)
-target_link_libraries(gtest ${GTEST_LIBRARIES} libasync ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(gtest ${GTEST_LIBRARIES} libasync pthread ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 # Add compile options to a target.
 if (MSVC)
